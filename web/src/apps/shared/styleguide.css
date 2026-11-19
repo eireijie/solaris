@@ -1,0 +1,9 @@
+.sg { display: flex; flex-direction: column; gap: var(--sol-space-16); }
+.sg-block { display: flex; flex-direction: column; gap: var(--sol-space-6); padding-top: var(--sol-space-8); border-top: 1px solid var(--sol-line-subtle); }
+.sg-block__head h2 { font-size: var(--sol-text-2xl); }
+.sg-block__head p { margin-top: 6px; font-size: var(--sol-text-sm); }
+.sg-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.sg-swatch { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sg-swatch span { width: 32px; height: 32px; flex: 0 0 auto; border: 1px solid var(--sol-line); border-radius: 6px; }
+.sg-swatch code { overflow: hidden; color: var(--sol-text-3); font-family: var(--sol-font-mono); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.sg-messages { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: var(--sol-text-sm); }

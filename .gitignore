@@ -1,0 +1,14 @@
+.venv/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+web/.screenshots/
+web/public/py/
+web/public/data/
+data/stations/raw/
+*.local
+reference/
+web/.env

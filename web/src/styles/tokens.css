@@ -1,0 +1,158 @@
+/*
+ * Solaris design tokens.
+ * Dark "space" theme is primary. Every component and chart reads from these.
+ * Naming: --sol-<category>-<role>. Do not hard-code colours in components.
+ */
+:root {
+  color-scheme: dark;
+
+  /* ---------- Colour: canvas & surfaces (near-black space) ---------- */
+  --sol-space: #010308;          /* hero / deepest background */
+  --sol-bg: #05070b;             /* page canvas */
+  --sol-surface-1: #0a0e14;      /* panels on canvas */
+  --sol-surface-2: #0f141c;      /* raised panels, inputs */
+  --sol-surface-3: #161d27;      /* hover / popovers */
+  --sol-surface-glass: rgba(10, 14, 20, 0.66);
+  --sol-overlay: rgba(1, 3, 8, 0.72);
+
+  /* ---------- Colour: text ---------- */
+  --sol-text: #eef3f7;
+  --sol-text-2: #c5cfd8;
+  --sol-text-3: #8f9ca8;         /* muted; >= 4.5:1 on --sol-bg */
+  --sol-text-inverse: #1c1205;   /* text on gold */
+
+  /* ---------- Colour: lines ---------- */
+  --sol-line-subtle: rgba(197, 207, 216, 0.10);
+  --sol-line: rgba(197, 207, 216, 0.18);
+  --sol-line-strong: rgba(197, 207, 216, 0.36);
+
+  /* ---------- Colour: brand ---------- */
+  --sol-solar: #f2b75e;          /* primary action + accent */
+  --sol-solar-hi: #ffd28b;       /* hover */
+  --sol-solar-deep: #ecb43c;     /* hero headline second line */
+  --sol-solar-glow: rgba(255, 184, 77, 0.18);
+  --sol-atmosphere: #66c8d2;     /* secondary accent (limb light, focus halo) */
+  --sol-horizon: #88a4ba;
+
+  /* ---------- Colour: model identity (not for actions) ---------- */
+  --sol-model-aeros: #f2b75e;
+  --sol-model-core: #87b4d8;
+  --sol-model-catalyst: #ed806d;
+  --sol-model-nexus: #62c8b7;
+
+  /* ---------- Colour: status ---------- */
+  --sol-success: #5fcf9a;
+  --sol-warning: #e6b456;
+  --sol-danger: #ef7d7d;
+  --sol-info: #7cc4f0;
+  --sol-focus: #9fdcff;
+
+  /* ---------- Colour: data / charts (Okabe–Ito derived, tuned for dark bg) ---------- */
+  --sol-data-observed: #cbd4dc;  /* observed points / historical line */
+  --sol-data-trend: #6cc3f0;     /* fitted trend (sky blue) */
+  --sol-data-projection: #f2b75e;/* projection (gold/orange) */
+  --sol-data-band: rgba(242, 183, 94, 0.18);
+  --sol-data-1: #f2b75e;         /* orange */
+  --sol-data-2: #6cc3f0;         /* sky blue */
+  --sol-data-3: #3fbf9b;         /* bluish green */
+  --sol-data-4: #e5735a;         /* vermillion */
+  --sol-data-5: #d19ac2;         /* reddish purple */
+  --sol-data-6: #efe27a;         /* yellow */
+  --sol-data-grid: rgba(197, 207, 216, 0.08);
+  --sol-data-axis: rgba(197, 207, 216, 0.28);
+  --sol-data-marker: rgba(197, 207, 216, 0.45);
+
+  /* ---------- Typography ---------- */
+  --sol-font-display: "Newsreader Variable", "Iowan Old Style", "Palatino Linotype",
+    Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  --sol-font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sol-font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+
+  /* Fluid type scale (min @ 360px → max @ 1440px) */
+  --sol-text-2xs: 0.6875rem;                                  /* 11 – labels floor */
+  --sol-text-xs: 0.75rem;                                     /* 12 */
+  --sol-text-sm: 0.875rem;                                    /* 14 */
+  --sol-text-md: 1rem;                                        /* 16 */
+  --sol-text-lg: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);  /* 17–19 lede */
+  --sol-text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);    /* 20–26 */
+  --sol-text-2xl: clamp(1.625rem, 1.3rem + 1.4vw, 2.5rem);    /* 26–40 */
+  --sol-text-3xl: clamp(2.125rem, 1.6rem + 2.4vw, 3.75rem);   /* 34–60 section titles */
+  --sol-text-4xl: clamp(2.75rem, 1.8rem + 4.4vw, 5.5rem);     /* 44–88 */
+  --sol-text-hero: clamp(3.25rem, 1.9rem + 6.6vw, 7.75rem);   /* 52–124 hero */
+
+  --sol-leading-tight: 0.92;
+  --sol-leading-snug: 1.15;
+  --sol-leading-body: 1.6;
+  --sol-tracking-display: -0.035em;
+  --sol-tracking-label: 0.14em;
+
+  --sol-weight-regular: 400;
+  --sol-weight-medium: 520;
+  --sol-weight-semibold: 620;
+
+  --sol-measure: 62ch;
+  --sol-measure-lede: 54ch;
+
+  /* ---------- Spacing (4-based) ---------- */
+  --sol-space-1: 4px;
+  --sol-space-2: 8px;
+  --sol-space-3: 12px;
+  --sol-space-4: 16px;
+  --sol-space-5: 20px;
+  --sol-space-6: 24px;
+  --sol-space-8: 32px;
+  --sol-space-10: 40px;
+  --sol-space-12: 48px;
+  --sol-space-16: 64px;
+  --sol-space-20: 80px;
+  --sol-space-24: 96px;
+  --sol-space-32: 128px;
+  --sol-section-y: clamp(72px, 10vw, 144px);
+  --sol-gutter: clamp(16px, 4vw, 40px);
+  --sol-container: 1240px;
+  --sol-container-narrow: 760px;
+  --sol-header-h: 64px;
+
+  /* ---------- Radii ---------- */
+  --sol-radius-xs: 4px;
+  --sol-radius-sm: 6px;
+  --sol-radius-md: 10px;
+  --sol-radius-lg: 16px;
+  --sol-radius-pill: 999px;
+
+  /* ---------- Controls ---------- */
+  --sol-control-h: 44px;
+  --sol-control-h-sm: 36px;
+
+  /* ---------- Elevation ---------- */
+  --sol-shadow-1: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sol-shadow-2: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px rgba(0, 0, 0, 0.45);
+  --sol-shadow-3: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 64px rgba(0, 0, 0, 0.6);
+  --sol-shadow-gold: 0 10px 30px rgba(255, 184, 77, 0.16);
+
+  /* ---------- Motion ---------- */
+  --sol-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --sol-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --sol-dur-fast: 140ms;
+  --sol-dur: 220ms;
+  --sol-dur-slow: 420ms;
+  --sol-dur-chart: 600ms;
+
+  /* ---------- Z-index ---------- */
+  --sol-z-hero: 0;
+  --sol-z-header: 50;
+  --sol-z-overlay: 80;
+  --sol-z-modal: 90;
+  --sol-z-tooltip: 100;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sol-dur-fast: 0ms;
+    --sol-dur: 0ms;
+    --sol-dur-slow: 0ms;
+    --sol-dur-chart: 0ms;
+  }
+}

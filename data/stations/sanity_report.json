@@ -1,0 +1,322 @@
+{
+  "method": "per-station OLS slope (degC/decade), windows 1940-1979 and 1980-latest, min 20 valid years per window; group = simple mean across stations",
+  "groups": {
+    "Americas (all)": {
+      "n": 40,
+      "D-J-F": {
+        "trend_1940_1979": -0.182,
+        "trend_1980_latest": 0.301,
+        "mean_change": 0.483,
+        "n_increase": 38,
+        "n_with_both": 40
+      },
+      "J-J-A": {
+        "trend_1940_1979": 0.035,
+        "trend_1980_latest": 0.247,
+        "mean_change": 0.212,
+        "n_increase": 31,
+        "n_with_both": 40
+      },
+      "local_winter": {
+        "trend_1940_1979": -0.129,
+        "trend_1980_latest": 0.274,
+        "mean_change": 0.403,
+        "n_increase": 31,
+        "n_with_both": 40
+      },
+      "local_summer": {
+        "trend_1940_1979": -0.018,
+        "trend_1980_latest": 0.274,
+        "mean_change": 0.292,
+        "n_increase": 38,
+        "n_with_both": 40
+      }
+    },
+    "United States": {
+      "n": 26,
+      "D-J-F": {
+        "trend_1940_1979": -0.286,
+        "trend_1980_latest": 0.329,
+        "mean_change": 0.615,
+        "n_increase": 24,
+        "n_with_both": 26
+      },
+      "J-J-A": {
+        "trend_1940_1979": -0.034,
+        "trend_1980_latest": 0.287,
+        "mean_change": 0.321,
+        "n_increase": 24,
+        "n_with_both": 26
+      },
+      "local_winter": {
+        "trend_1940_1979": -0.286,
+        "trend_1980_latest": 0.329,
+        "mean_change": 0.615,
+        "n_increase": 24,
+        "n_with_both": 26
+      },
+      "local_summer": {
+        "trend_1940_1979": -0.034,
+        "trend_1980_latest": 0.287,
+        "mean_change": 0.321,
+        "n_increase": 24,
+        "n_with_both": 26
+      }
+    },
+    "United States / urban": {
+      "n": 13,
+      "D-J-F": {
+        "trend_1940_1979": -0.249,
+        "trend_1980_latest": 0.367,
+        "mean_change": 0.616,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "J-J-A": {
+        "trend_1940_1979": -0.014,
+        "trend_1980_latest": 0.316,
+        "mean_change": 0.33,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "local_winter": {
+        "trend_1940_1979": -0.249,
+        "trend_1980_latest": 0.367,
+        "mean_change": 0.616,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "local_summer": {
+        "trend_1940_1979": -0.014,
+        "trend_1980_latest": 0.316,
+        "mean_change": 0.33,
+        "n_increase": 12,
+        "n_with_both": 13
+      }
+    },
+    "United States / non-rural (urban+periurban)": {
+      "n": 13,
+      "D-J-F": {
+        "trend_1940_1979": -0.249,
+        "trend_1980_latest": 0.367,
+        "mean_change": 0.616,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "J-J-A": {
+        "trend_1940_1979": -0.014,
+        "trend_1980_latest": 0.316,
+        "mean_change": 0.33,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "local_winter": {
+        "trend_1940_1979": -0.249,
+        "trend_1980_latest": 0.367,
+        "mean_change": 0.616,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "local_summer": {
+        "trend_1940_1979": -0.014,
+        "trend_1980_latest": 0.316,
+        "mean_change": 0.33,
+        "n_increase": 12,
+        "n_with_both": 13
+      }
+    },
+    "United States / rural": {
+      "n": 13,
+      "D-J-F": {
+        "trend_1940_1979": -0.324,
+        "trend_1980_latest": 0.291,
+        "mean_change": 0.615,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "J-J-A": {
+        "trend_1940_1979": -0.054,
+        "trend_1980_latest": 0.258,
+        "mean_change": 0.313,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "local_winter": {
+        "trend_1940_1979": -0.324,
+        "trend_1980_latest": 0.291,
+        "mean_change": 0.615,
+        "n_increase": 12,
+        "n_with_both": 13
+      },
+      "local_summer": {
+        "trend_1940_1979": -0.054,
+        "trend_1980_latest": 0.258,
+        "mean_change": 0.313,
+        "n_increase": 12,
+        "n_with_both": 13
+      }
+    },
+    "Argentina": {
+      "n": 14,
+      "D-J-F": {
+        "trend_1940_1979": 0.013,
+        "trend_1980_latest": 0.249,
+        "mean_change": 0.237,
+        "n_increase": 14,
+        "n_with_both": 14
+      },
+      "J-J-A": {
+        "trend_1940_1979": 0.163,
+        "trend_1980_latest": 0.171,
+        "mean_change": 0.008,
+        "n_increase": 7,
+        "n_with_both": 14
+      },
+      "local_winter": {
+        "trend_1940_1979": 0.163,
+        "trend_1980_latest": 0.171,
+        "mean_change": 0.008,
+        "n_increase": 7,
+        "n_with_both": 14
+      },
+      "local_summer": {
+        "trend_1940_1979": 0.013,
+        "trend_1980_latest": 0.249,
+        "mean_change": 0.237,
+        "n_increase": 14,
+        "n_with_both": 14
+      }
+    },
+    "Argentina / urban": {
+      "n": 2,
+      "D-J-F": {
+        "trend_1940_1979": 0.014,
+        "trend_1980_latest": 0.28,
+        "mean_change": 0.266,
+        "n_increase": 2,
+        "n_with_both": 2
+      },
+      "J-J-A": {
+        "trend_1940_1979": 0.195,
+        "trend_1980_latest": 0.213,
+        "mean_change": 0.017,
+        "n_increase": 1,
+        "n_with_both": 2
+      },
+      "local_winter": {
+        "trend_1940_1979": 0.195,
+        "trend_1980_latest": 0.213,
+        "mean_change": 0.017,
+        "n_increase": 1,
+        "n_with_both": 2
+      },
+      "local_summer": {
+        "trend_1940_1979": 0.014,
+        "trend_1980_latest": 0.28,
+        "mean_change": 0.266,
+        "n_increase": 2,
+        "n_with_both": 2
+      }
+    },
+    "Argentina / non-rural (urban+periurban)": {
+      "n": 8,
+      "D-J-F": {
+        "trend_1940_1979": 0.098,
+        "trend_1980_latest": 0.267,
+        "mean_change": 0.169,
+        "n_increase": 8,
+        "n_with_both": 8
+      },
+      "J-J-A": {
+        "trend_1940_1979": 0.167,
+        "trend_1980_latest": 0.175,
+        "mean_change": 0.008,
+        "n_increase": 4,
+        "n_with_both": 8
+      },
+      "local_winter": {
+        "trend_1940_1979": 0.167,
+        "trend_1980_latest": 0.175,
+        "mean_change": 0.008,
+        "n_increase": 4,
+        "n_with_both": 8
+      },
+      "local_summer": {
+        "trend_1940_1979": 0.098,
+        "trend_1980_latest": 0.267,
+        "mean_change": 0.169,
+        "n_increase": 8,
+        "n_with_both": 8
+      }
+    },
+    "Argentina / rural": {
+      "n": 6,
+      "D-J-F": {
+        "trend_1940_1979": -0.101,
+        "trend_1980_latest": 0.225,
+        "mean_change": 0.327,
+        "n_increase": 6,
+        "n_with_both": 6
+      },
+      "J-J-A": {
+        "trend_1940_1979": 0.158,
+        "trend_1980_latest": 0.167,
+        "mean_change": 0.009,
+        "n_increase": 3,
+        "n_with_both": 6
+      },
+      "local_winter": {
+        "trend_1940_1979": 0.158,
+        "trend_1980_latest": 0.167,
+        "mean_change": 0.009,
+        "n_increase": 3,
+        "n_with_both": 6
+      },
+      "local_summer": {
+        "trend_1940_1979": -0.101,
+        "trend_1980_latest": 0.225,
+        "mean_change": 0.327,
+        "n_increase": 6,
+        "n_with_both": 6
+      }
+    },
+    "Argentina / periurban": {
+      "n": 6,
+      "D-J-F": {
+        "trend_1940_1979": 0.126,
+        "trend_1980_latest": 0.263,
+        "mean_change": 0.137,
+        "n_increase": 6,
+        "n_with_both": 6
+      },
+      "J-J-A": {
+        "trend_1940_1979": 0.157,
+        "trend_1980_latest": 0.162,
+        "mean_change": 0.005,
+        "n_increase": 3,
+        "n_with_both": 6
+      },
+      "local_winter": {
+        "trend_1940_1979": 0.157,
+        "trend_1980_latest": 0.162,
+        "mean_change": 0.005,
+        "n_increase": 3,
+        "n_with_both": 6
+      },
+      "local_summer": {
+        "trend_1940_1979": 0.126,
+        "trend_1980_latest": 0.263,
+        "mean_change": 0.137,
+        "n_increase": 6,
+        "n_with_both": 6
+      }
+    }
+  },
+  "dropped": [
+    {
+      "id": "KEM00063741",
+      "display_name": "Nairobi, Kenya (Dagoretti)",
+      "reason": "coverage below rule: {'D-J-F': 56, 'J-J-A': 58, 'D-J-F_1940_1979': 33, 'J-J-A_1940_1979': 32, 'D-J-F_1980_latest': 23, 'J-J-A_1980_latest': 26}"
+    }
+  ]
+}

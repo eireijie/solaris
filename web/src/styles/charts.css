@@ -1,0 +1,205 @@
+/* Charts */
+.sol-chart {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--sol-space-3);
+  margin: 0;
+}
+
+.sol-chart__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  color: var(--sol-text);
+  font-size: var(--sol-text-md);
+  font-weight: 600;
+}
+
+.sol-chart__unit {
+  color: var(--sol-text-3);
+  font-family: var(--sol-font-mono);
+  font-size: var(--sol-text-2xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.sol-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sol-chart__legend-item {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 6px;
+  border: 1px solid transparent;
+  border-radius: var(--sol-radius-sm);
+  background: transparent;
+  color: var(--sol-text-2);
+  font-size: var(--sol-text-xs);
+  transition: opacity var(--sol-dur), background-color var(--sol-dur);
+}
+
+.sol-chart__legend-item:hover {
+  background: rgba(196, 208, 227, 0.06);
+}
+
+.sol-chart__legend-item.is-off {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.sol-chart__legend-note {
+  color: var(--sol-text-3);
+  font-size: var(--sol-text-2xs);
+}
+
+.sol-chart__plot {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.sol-chart__svg {
+  display: block;
+  overflow: visible;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sol-chart__svg:focus-visible {
+  outline: 2px solid var(--sol-focus);
+  outline-offset: 4px;
+}
+
+.sol-chart__grid line {
+  stroke: var(--sol-data-grid);
+  stroke-width: 1;
+}
+
+.sol-chart__grid text,
+.sol-chart__marker text,
+.sol-chart__projection text,
+.sol-chart__reference text {
+  fill: var(--sol-text-3);
+  font-family: var(--sol-font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sol-chart__baseline {
+  stroke: var(--sol-data-axis) !important;
+}
+
+.sol-chart__projection rect {
+  fill: rgba(242, 183, 94, 0.035);
+}
+
+.sol-chart__projection line,
+.sol-chart__marker line {
+  stroke: var(--sol-data-marker);
+  stroke-dasharray: 2 4;
+}
+
+.sol-chart__projection text {
+  fill: var(--sol-solar-hi);
+  opacity: 0.85;
+}
+
+.sol-chart__reference line {
+  stroke: var(--sol-data-axis);
+  stroke-dasharray: 6 4;
+}
+
+.sol-chart__band {
+  opacity: 0.17;
+}
+
+.sol-chart__crosshair line {
+  stroke: rgba(238, 243, 247, 0.38);
+}
+
+.sol-chart__crosshair circle {
+  stroke: var(--sol-bg);
+  stroke-width: 2;
+}
+
+.sol-chart__tooltip {
+  position: absolute;
+  z-index: 5;
+  top: 8px;
+  min-width: 180px;
+  max-width: min(300px, 80%);
+  padding: 10px 12px;
+  border: 1px solid var(--sol-line-strong);
+  border-radius: var(--sol-radius-sm);
+  background: rgba(15, 20, 28, 0.94);
+  box-shadow: var(--sol-shadow-2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: var(--sol-text-xs);
+  pointer-events: none;
+}
+
+.sol-chart__tooltip-x {
+  margin-bottom: 6px;
+  color: var(--sol-text);
+  font-family: var(--sol-font-mono);
+  font-weight: 600;
+}
+
+.sol-chart__tooltip-row {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--sol-text-2);
+  line-height: 1.7;
+}
+
+.sol-chart__tooltip-row small {
+  color: var(--sol-text-3);
+}
+
+.sol-chart__swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sol-chart__tooltip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sol-chart__footer {
+  color: var(--sol-text-3);
+  font-size: var(--sol-text-xs);
+}
+
+.sol-chart__group-label {
+  fill: var(--sol-text-2);
+  font-family: var(--sol-font-sans);
+  font-size: 13px;
+}
+
+.sol-chart__group-value {
+  fill: var(--sol-text-3);
+  font-family: var(--sol-font-mono);
+  font-size: 11px;
+}
+
+.sol-sparkline {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+}

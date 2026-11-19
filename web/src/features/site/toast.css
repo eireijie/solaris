@@ -1,0 +1,107 @@
+.site-toasts {
+  position: fixed;
+  z-index: var(--sol-z-tooltip);
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  width: min(400px, calc(100vw - 32px));
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  /* Above the workspace bottom tab bar. */
+  .site-toasts {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+}
+
+.site-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 12px 14px 16px;
+  border: 1px solid var(--sol-line-strong);
+  border-radius: var(--sol-radius-md);
+  background: color-mix(in srgb, var(--sol-surface-2) 94%, transparent);
+  box-shadow: var(--sol-shadow-3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: site-toast-in var(--sol-dur-slow) var(--sol-ease-out);
+  pointer-events: auto;
+}
+
+@keyframes site-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.site-toast__icon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sol-info) 16%, transparent);
+  color: var(--sol-info);
+}
+
+.site-toast--success .site-toast__icon {
+  background: color-mix(in srgb, var(--sol-success) 16%, transparent);
+  color: var(--sol-success);
+}
+
+.site-toast--danger .site-toast__icon {
+  background: color-mix(in srgb, var(--sol-danger) 16%, transparent);
+  color: var(--sol-danger);
+}
+
+.site-toast__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.site-toast__title {
+  color: var(--sol-text);
+  font-size: var(--sol-text-sm);
+  font-weight: 560;
+}
+
+.site-toast__text {
+  margin-top: 2px;
+  color: var(--sol-text-3);
+  font-size: var(--sol-text-sm);
+}
+
+.site-toast__action {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sol-solar);
+  font-size: var(--sol-text-sm);
+  font-weight: 560;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-toast__close {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: var(--sol-radius-sm);
+  background: none;
+  color: var(--sol-text-3);
+}
+
+.site-toast__close:hover {
+  background: var(--sol-surface-3);
+  color: var(--sol-text);
+}

@@ -1,0 +1,7 @@
+node_modules
+dist
+.screenshots
+public/py/solaris_models
+public/py/manifest.json
+public/data
+public/precomputed

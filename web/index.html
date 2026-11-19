@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="solaris-root" content="./" />
+    <meta name="theme-color" content="#010308" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Solaris is a student-led climate research platform that turns real weather-station records into transparent projections to 2100 — and lets you test what changes them. Four models run in your browser: Aeros, Nexus, CORe and Catalyst." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Solaris" />
+    <meta property="og:title" content="Solaris — Model the future. Test what changes it." />
+    <meta property="og:description" content="Real station records, transparent projections to 2100 and what-if CO₂ scenarios — research models running in your browser." />
+    <meta property="og:url" content="%VITE_PUBLIC_SITE_URL%" />
+    <meta property="og:image" content="%VITE_PUBLIC_SITE_URL%earth-sequence-mobile/earth-001.jpg" />
+    <meta property="og:image:alt" content="The Earth from space, NASA Scientific Visualization Studio imagery" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preload" as="fetch" crossorigin="anonymous" href="./earth-sequence-mobile/earth-001.jpg" media="(max-width: 820px)" />
+    <link rel="preload" as="fetch" crossorigin="anonymous" href="./earth-sequence/earth-001.jpg" media="(min-width: 821px)" />
+    <title>Solaris — Model the future. Test what changes it.</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript><p style="padding:24px;color:#eef3f7;font-family:system-ui">Solaris needs JavaScript to run its models in your browser.</p></noscript>
+    <script type="module" src="/src/main-platform.tsx"></script>
+  </body>
+</html>

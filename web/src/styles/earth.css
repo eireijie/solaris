@@ -1,0 +1,362 @@
+/* EarthScroll hero */
+.sol-earth {
+  --earth-p: 0;
+  position: relative;
+  height: calc(var(--earth-length, 5) * 100svh);
+  background: var(--sol-space);
+}
+
+.sol-earth__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--sol-space);
+}
+
+.sol-earth__canvas {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--sol-ease-out);
+}
+
+.sol-earth.is-ready .sol-earth__canvas {
+  opacity: 1;
+}
+
+/* Distant warm sunlight — ties the brand gold into the scene. */
+.sol-earth__sun {
+  position: absolute;
+  z-index: 1;
+  top: -30vmax;
+  right: -24vmax;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 196, 120, 0.1), rgba(255, 170, 80, 0.035) 45%, transparent 70%);
+  opacity: calc(1 - var(--earth-p) * 0.8);
+  pointer-events: none;
+}
+
+.sol-earth__vignette {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background:
+    radial-gradient(130% 95% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(180deg, rgba(1, 3, 8, 0.55) 0%, transparent 22%);
+  pointer-events: none;
+}
+
+.sol-earth__grain {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background-image: repeating-radial-gradient(circle at 18% 32%, rgba(255, 255, 255, 0.022) 0, rgba(255, 255, 255, 0.022) 0.5px, transparent 0.8px, transparent 4px);
+  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Fade to the page background at the very end so the next section joins seamlessly. */
+.sol-earth__handoff {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, var(--sol-bg));
+  opacity: clamp(0, calc((var(--earth-p) - 0.86) * 7), 1);
+  pointer-events: none;
+}
+
+.sol-earth__overlay {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ---------- Chapters ---------- */
+.sol-earth-chapter {
+  position: absolute;
+  display: flex;
+  padding: calc(var(--sol-header-h) + clamp(24px, 6vh, 72px)) var(--sol-gutter) clamp(32px, 8vh, 96px);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.sol-earth-chapter__inner {
+  width: 100%;
+  max-width: var(--sol-container);
+  margin-inline: auto;
+}
+
+.sol-earth-chapter--top {
+  inset: 0 0 auto 0;
+  justify-content: center;
+  text-align: center;
+}
+
+.sol-earth-chapter--top .sol-earth-chapter__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sol-earth-chapter--center {
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.sol-earth-chapter--left,
+.sol-earth-chapter--right {
+  inset: 0;
+  align-items: center;
+}
+
+.sol-earth-chapter--left .sol-earth-chapter__inner > * {
+  max-width: min(500px, 46%);
+}
+
+.sol-earth-chapter--right .sol-earth-chapter__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.sol-earth-chapter--right .sol-earth-chapter__inner > * {
+  width: min(500px, 46%);
+}
+
+.sol-earth-chapter--bottom {
+  inset: auto 0 0 0;
+  justify-content: center;
+  text-align: center;
+}
+
+.sol-earth-chapter--bottom-left {
+  inset: auto 0 0 0;
+}
+
+/* Text legibility over imagery */
+.sol-earth-chapter h1,
+.sol-earth-chapter h2,
+.sol-earth-chapter p {
+  text-shadow: 0 2px 6px rgba(0, 3, 10, 0.75), 0 8px 36px rgba(0, 3, 10, 0.7);
+}
+
+@media (max-width: 820px), (max-aspect-ratio: 1/1) {
+  /* Portrait: everything sits in the upper half above the planet. */
+  .sol-earth-chapter--left,
+  .sol-earth-chapter--right,
+  .sol-earth-chapter--center {
+    inset: 0 0 auto 0;
+    align-items: flex-start;
+  }
+
+  .sol-earth-chapter--left .sol-earth-chapter__inner > *,
+  .sol-earth-chapter--right .sol-earth-chapter__inner > * {
+    width: auto;
+    max-width: 100%;
+  }
+
+  .sol-earth-chapter--right .sol-earth-chapter__inner {
+    align-items: flex-start;
+  }
+
+  .sol-earth-chapter--center {
+    text-align: left;
+  }
+}
+
+/* ---------- Cue + loader ---------- */
+.sol-earth__cue {
+  text-shadow: 0 1px 8px rgba(0, 3, 10, 0.9);
+  position: absolute;
+  z-index: 6;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: rgba(214, 228, 240, 0.7);
+  font-family: var(--sol-font-mono);
+  font-size: var(--sol-text-2xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: clamp(0, calc(1 - var(--earth-p) * 30), 1);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.sol-earth__cue-line {
+  position: relative;
+  width: 1px;
+  height: 36px;
+  overflow: hidden;
+  background: rgba(214, 228, 240, 0.18);
+}
+
+.sol-earth__cue-line::after {
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 1px;
+  height: 40%;
+  background: var(--sol-solar);
+  animation: sol-cue 2.2s var(--sol-ease-in-out) infinite;
+  content: "";
+}
+
+@keyframes sol-cue {
+  to { top: 100%; }
+}
+
+.sol-earth__loader {
+  position: absolute;
+  z-index: 6;
+  right: var(--sol-gutter);
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  min-width: 170px;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 6px;
+  color: rgba(184, 216, 236, 0.6);
+  font-family: var(--sol-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: opacity 900ms ease 400ms;
+}
+
+.sol-earth__loader.is-done {
+  opacity: 0;
+}
+
+.sol-earth__loader-bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(102, 200, 210, 0.8), rgba(102, 200, 210, 0.2));
+  transform-origin: left;
+  transition: transform 300ms ease;
+}
+
+@media (max-width: 820px) {
+  .sol-earth__loader {
+    display: none;
+  }
+}
+
+/* ---------- Reduced motion: static hero, normal flow ---------- */
+.sol-earth.is-static {
+  height: auto;
+}
+
+.sol-earth.is-static .sol-earth__stage {
+  position: absolute;
+  inset: 0 0 auto 0;
+}
+
+.sol-earth__flow {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sol-space-16);
+  padding-bottom: var(--sol-section-y);
+}
+
+.sol-earth__flow .sol-earth-chapter {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.sol-earth__flow .sol-earth-chapter:first-child {
+  min-height: 100svh;
+}
+
+.sol-earth__flow .sol-earth-chapter:not(:first-child) {
+  padding-top: 0;
+}
+
+/* ---------- Hero typography helpers (used inside chapters) ---------- */
+.sol-hero__title {
+  max-width: 14ch;
+  margin-inline: auto;
+  font-family: var(--sol-font-display);
+  font-size: var(--sol-text-hero);
+  font-weight: 380;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+  font-variation-settings: "opsz" 72;
+}
+
+.sol-hero__title > span {
+  display: block;
+  margin-top: 0.06em;
+  color: var(--sol-solar-deep);
+}
+
+.sol-hero__lede {
+  max-width: 34rem;
+  margin: var(--sol-space-6) auto 0;
+  color: #fff;
+  font-size: var(--sol-text-lg);
+  line-height: 1.6;
+}
+
+.sol-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sol-space-3);
+  margin-top: var(--sol-space-8);
+}
+
+.sol-chapter-title {
+  margin-top: var(--sol-space-4);
+  font-family: var(--sol-font-display);
+  font-size: var(--sol-text-4xl);
+  font-weight: 380;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.sol-chapter-text {
+  max-width: 40ch;
+  margin-top: var(--sol-space-5);
+  padding-top: var(--sol-space-4);
+  border-top: 1px solid rgba(112, 202, 234, 0.3);
+  color: rgba(226, 236, 246, 0.82);
+  font-size: var(--sol-text-md);
+  line-height: 1.65;
+}
+
+@media (max-width: 820px) {
+  .sol-hero__title {
+    max-width: 11ch;
+  }
+
+  .sol-hero__actions .sol-btn {
+    flex: 1 1 160px;
+  }
+}
