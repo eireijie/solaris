@@ -1,0 +1,52 @@
+{
+  "generated": "2026-11-19T16:46:45.077Z",
+  "bundles": {
+    "stations": {
+      "path": "data/stations_bundle.json",
+      "bytes": 86397
+    },
+    "co2": {
+      "path": "data/co2_bundle.json",
+      "bytes": 149511
+    }
+  },
+  "downloads": [
+    {
+      "name": "aeros_input_template.csv",
+      "path": "data/downloads/aeros_input_template.csv",
+      "bytes": 17
+    },
+    {
+      "name": "solaris_sample_stations.zip",
+      "path": "data/downloads/solaris_sample_stations.zip",
+      "bytes": 40858
+    },
+    {
+      "name": "historical_co2_1940_2025.csv",
+      "path": "data/downloads/historical_co2_1940_2025.csv",
+      "bytes": 3595
+    },
+    {
+      "name": "ssp_co2_concentrations.csv",
+      "path": "data/downloads/ssp_co2_concentrations.csv",
+      "bytes": 31858
+    },
+    {
+      "name": "ssp_co2_emissions.csv",
+      "path": "data/downloads/ssp_co2_emissions.csv",
+      "bytes": 125530
+    },
+    {
+      "name": "ssp_erf.csv",
+      "path": "data/downloads/ssp_erf.csv",
+      "bytes": 107600
+    }
+  ],
+  "precomputed": {
+    "aeros": 45,
+    "catalyst": 6,
+    "core": 1,
+    "nexus": 46
+  },
+  "stationCsvDir": "data/stations-csv/"
+}

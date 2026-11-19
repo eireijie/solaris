@@ -1,0 +1,45 @@
+{
+  "generated": "2026-11-19T16:46:45.037Z",
+  "packages": {
+    "_selftest": {
+      "files": [
+        {
+          "path": "__init__.py",
+          "hash": "58bcc2f3f5"
+        }
+      ]
+    },
+    "solaris_models": {
+      "files": [
+        {
+          "path": "__init__.py",
+          "hash": "b3c4c1eef8"
+        },
+        {
+          "path": "aeros_io.py",
+          "hash": "fdf917c9ed"
+        },
+        {
+          "path": "aeros.py",
+          "hash": "8ce19740d8"
+        },
+        {
+          "path": "api.py",
+          "hash": "1221343c84"
+        },
+        {
+          "path": "catalyst.py",
+          "hash": "c1a3e189ba"
+        },
+        {
+          "path": "core.py",
+          "hash": "6afe46fa41"
+        },
+        {
+          "path": "nexus.py",
+          "hash": "8d33054fb4"
+        }
+      ]
+    }
+  }
+}
