@@ -59,8 +59,7 @@
   z-index: 2;
   inset: 0;
   background-image: repeating-radial-gradient(circle at 18% 32%, rgba(255, 255, 255, 0.022) 0, rgba(255, 255, 255, 0.022) 0.5px, transparent 0.8px, transparent 4px);
-  mix-blend-mode: soft-light;
-  opacity: 0.8;
+  display: none;
   pointer-events: none;
 }
 

@@ -243,7 +243,9 @@ export function EarthScroll({
     const frames = new FrameSet({
       baseUrl: publicUrl(useMobile ? "earth-sequence-mobile/" : "earth-sequence/"),
       count: FRAME_COUNT,
-      maxDecoded: useMobile ? 14 : 10,
+      maxDecoded: useMobile ? 20 : 16,
+      // Decode desktop frames below native size: smaller textures upload and draw much faster.
+      decodeSize: useMobile ? undefined : 1280,
     });
     let renderer: EarthRenderer;
     try {
@@ -258,12 +260,13 @@ export function EarthScroll({
     let last = performance.now();
     let dirty = true;
     let disposed = false;
+    let lastVar = "";
 
     const measure = () => {
       const rect = section.getBoundingClientRect();
       geom.current = { top: rect.top + window.scrollY, height: rect.height, vh: window.innerHeight };
       const s = stage.getBoundingClientRect();
-      renderer.resize(s.width, s.height, useMobile ? 2 : 2);
+      renderer.resize(s.width, s.height, useMobile ? 1.5 : 1.25);
       dirty = true;
     };
 
@@ -292,7 +295,12 @@ export function EarthScroll({
         renderer.draw(frame, pose, shown);
         dirty = false;
         progressRef.current = shown;
-        section.style.setProperty("--earth-p", shown.toFixed(4));
+        // Coarse steps only: every write restyles the whole hero subtree.
+        const coarse = (Math.round(shown * 100) / 100).toFixed(2);
+        if (coarse !== lastVar) {
+          lastVar = coarse;
+          section.style.setProperty("--earth-p", coarse);
+        }
         listeners.current.forEach((l) => l(shown));
         onProgressRef.current?.(shown);
       }

@@ -38,7 +38,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
   const [ui, setUi] = useState<CoreUi>(restored ?? CORE_DEFAULTS);
   const [draft, setDraft] = useState<CoreUi>(restored ?? CORE_DEFAULTS);
   const [metric, setMetric] = useState<Metric>("ppm");
-  const [showSsp, setShowSsp] = useState(true);
+  const [showSsp, setShowSsp] = useState(false);
   const runner = useWorkbenchRun<CoreResult>("core", `core-${uid}`);
   const reqKey = `${ui.ecs}:${ui.heatCapacity}:${ui.endYear}`;
   const handled = useRef<string | null>(initialRun?.result ? reqKey : null);
@@ -160,7 +160,17 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
 
   const controls = (
     <div className="wb-controls">
-      <div className={compact ? "wb-controls__more" : "wb-controls__group"}>
+      <Slider
+        label="Project to"
+        min={2050}
+        max={2100}
+        step={5}
+        value={draft.endYear}
+        onChange={(v) => setDraft((d) => ({ ...d, endYear: v }))}
+        onCommit={commit("endYear")}
+      />
+      <Disclosure summary="Response estimate settings">
+        <div className="wb-controls__group">
         <Slider
           label="Climate sensitivity (ECS)"
           min={1.5}
@@ -174,7 +184,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
             { value: 2.5, label: "2.5" },
             { value: 4, label: "4.0" },
           ]}
-          hint="Affects only the forcing response estimate. Marks: IPCC AR6 likely range 2.5–4.0 °C. Notebook: 3.0."
+          hint="Notebook value: 3.0. Marks show the IPCC AR6 likely range."
         />
         <Slider
           label="Heat capacity"
@@ -185,16 +195,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
           format={(v) => `${v} W yr/m²/K`}
           onChange={(v) => setDraft((d) => ({ ...d, heatCapacity: v }))}
           onCommit={commit("heatCapacity")}
-          hint="One-box ocean layer (8 ≈ 60 m mixed layer). Notebook: 8."
-        />
-        <Slider
-          label="Project to"
-          min={2050}
-          max={2100}
-          step={5}
-          value={draft.endYear}
-          onChange={(v) => setDraft((d) => ({ ...d, endYear: v }))}
-          onCommit={commit("endYear")}
+          hint="Notebook value: 8."
         />
         {!isDefault(ui) ? (
           <Button
@@ -208,7 +209,8 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
             Reset to notebook defaults
           </Button>
         ) : null}
-      </div>
+        </div>
+      </Disclosure>
     </div>
   );
 
@@ -234,7 +236,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
                   value={fmt(end.ppm_mean, 1)}
                   unit="ppm"
                   label={`CO₂ in ${end.year}`}
-                  detail={`envelope ${range(end.ppm_lower, end.ppm_upper, 1, "ppm")} · from ${fmt(r.inputs.historical.last_ppm, 2)} ppm in ${r.inputs.historical.last_year}`}
+                  detail={`range ${range(end.ppm_lower, end.ppm_upper, 1, "ppm")}`}
                   source={`CORe ${r.version} · historical-continuation pathway, not an IPCC scenario`}
                 />
                 <Stat
@@ -242,15 +244,15 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
                   value={fmt(end.forcing_wm2, 2)}
                   unit="W/m²"
                   label={`CO₂ forcing in ${end.year}`}
-                  detail={`range ${range(end.forcing_lower_wm2, end.forcing_upper_wm2, 2, "W/m²")} · 5.35 ln(C/278.3)`}
+                  detail={`range ${range(end.forcing_lower_wm2, end.forcing_upper_wm2, 2, "W/m²")}`}
                   source={`CORe ${r.version} · CO₂ only`}
                 />
                 <Stat
                   size="sm"
                   value={fmt(end.temperature_response_c, 2)}
                   unit="°C"
-                  label={`Forcing response estimate (CO₂-only, one-box), ${end.year}`}
-                  detail={`ECS ${fmt(r.inputs.settings.ecs_c, 1)} °C · starts at ${fmt(r.inputs.settings.initial_temp_anomaly_c, 1)} °C in ${r.inputs.historical.last_year} · not comparable to IPCC warming`}
+                  label={`Response estimate in ${end.year}`}
+                  detail="CO₂ only, one-box. Not comparable to IPCC warming"
                   source={`CORe ${r.version}`}
                 />
               </div>
@@ -261,12 +263,12 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
                   options={[
                     { value: "ppm", label: "CO₂ (ppm)" },
                     { value: "forcing", label: "Forcing (W/m²)" },
-                    { value: "temp", label: "Response estimate (°C)" },
+                    { value: "temp", label: "Response (°C)" },
                   ]}
                   value={metric}
                   onChange={setMetric}
                 />
-                {metric === "ppm" ? <Toggle label="SSP pathways for context" checked={showSsp} onChange={setShowSsp} /> : null}
+                {metric === "ppm" ? <Toggle label="Compare with SSP pathways" checked={showSsp} onChange={setShowSsp} /> : null}
               </div>
               <div data-testid="core-chart">
                 <TimeSeriesChart
@@ -308,6 +310,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
                 </Callout>
               ) : null}
               <Warnings warnings={r.warnings} />
+              <Disclosure summary="Validation and ensemble weights">
               <div className="wb-grid2">
                 <div className="wb-span2">
                   <SectionTitle aside={<span className="wb-note">rolling-origin backtest, ≤ 10-yr horizons</span>}>Validation of candidate models</SectionTitle>
@@ -360,6 +363,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
                   <KV rows={r.ensemble.map((e) => [<span className="sol-mono">{e.model}</span>, `${fmt(e.weight * 100, 1)}%`])} />
                 </div>
               </div>
+              </Disclosure>
               <Disclosure summary="Data and method">
                 <ul className="wb-list">
                   {(r.provenance.data_sources as string[] | undefined)?.map((d) => <li key={d}>{d}</li>)}
@@ -369,9 +373,7 @@ export function CoreWorkbench({ compact, initialRun, onRunComplete, onSaveReques
                   NOAA revises recent annual values by about 0.01–0.02 ppm between releases, which moves the 2100 value by up to roughly 0.3 ppm; the bundled data pin the 9 Oct 2026 release.
                 </p>
               </Disclosure>
-              <Callout tone="honesty" compact>
-                CORe is a historical-continuation pathway (what happens if recent CO₂ growth behaviour continues), not an IPCC emissions scenario. Conditional model output, not a prediction.
-              </Callout>
+              <p className="wb-disclaimer">CORe continues recent CO₂ growth. It is not an IPCC emissions scenario. Conditional model output, not a prediction.</p>
               <ExportBar
                 csv={() => {
                   const h = r.historical;

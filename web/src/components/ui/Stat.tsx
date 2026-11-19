@@ -17,7 +17,7 @@ export function Stat({
   unit?: ReactNode;
   label: ReactNode;
   /** Where the number comes from, e.g. "Poster, 40 stations" or "Aeros 4.0 run". */
-  source: ReactNode;
+  source?: ReactNode;
   detail?: ReactNode;
   tone?: "default" | "solar" | "atmosphere";
   size?: "sm" | "md" | "lg";
@@ -30,10 +30,12 @@ export function Stat({
       </p>
       <p className="sol-stat__label">{label}</p>
       {detail ? <p className="sol-stat__detail">{detail}</p> : null}
-      <p className="sol-stat__source">
-        <span className="sol-visually-hidden">Source: </span>
-        {source}
-      </p>
+      {source ? (
+        <p className="sol-stat__source">
+          <span className="sol-visually-hidden">Source: </span>
+          {source}
+        </p>
+      ) : null}
     </div>
   );
 }

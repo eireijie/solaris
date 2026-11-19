@@ -97,7 +97,6 @@
   border: 1px solid var(--sol-line);
   border-radius: var(--sol-radius-lg);
   background:
-    radial-gradient(70% 60% at 50% 0%, rgba(242, 183, 94, 0.06), transparent 70%),
     var(--sol-surface-1);
 }
 

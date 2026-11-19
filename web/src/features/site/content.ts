@@ -51,7 +51,7 @@ export const MODELS: ModelCopy[] = [
     statusLabel: "From the research notebook",
     question: "How might this station’s winters and summers change by 2100?",
     does:
-      "Seasonal temperature forecasting. A stacked ensemble of trend models plus a residual simulator projects a station’s winter and summer means to 2100, with 200 bootstrap paths for the 95% range.",
+      "An ensemble of trend models projects a station’s winter and summer means to 2100, with a 95% range from 200 bootstrap paths.",
     inputs: "A station’s seasonal record (bundled or your own CSV)",
     outputs: "Projection to 2100 · 95% range · trend slopes",
     route: "/app/aeros",
@@ -64,7 +64,7 @@ export const MODELS: ModelCopy[] = [
     statusLabel: "From the research notebook",
     question: "Where does atmospheric CO₂ go if recent history continues?",
     does:
-      "CO₂ and forcing. A validation-weighted ensemble of ten growth models continues the observed CO₂ record to 2100, then converts concentration to radiative forcing and a simple temperature-response estimate.",
+      "An ensemble of ten growth models continues the observed CO₂ record to 2100, then converts concentration to radiative forcing.",
     inputs: "Observed global CO₂ (NOAA GML, RCMIP before 1979)",
     outputs: "CO₂ pathway · backtest-based range · forcing",
     route: "/app/core",
@@ -77,7 +77,7 @@ export const MODELS: ModelCopy[] = [
     statusLabel: "New · simplified",
     question: "What changes if emissions peak sooner, or fall faster?",
     does:
-      "What-if scenarios. Edit an emissions or concentration pathway — peak year, decline rate, net zero, carbon removal — and follow it through a carbon cycle, CO₂ forcing and temperature, with climate-sensitivity ranges as bands.",
+      "Edit an emissions pathway (peak year, decline rate, net zero, carbon removal) and follow it through a simple carbon cycle to CO₂, forcing and warming.",
     inputs: "SSP pathway, CORe pathway or your own edits",
     outputs: "Scenario CO₂ · forcing · warming vs baseline",
     route: "/app/catalyst",
@@ -90,7 +90,7 @@ export const MODELS: ModelCopy[] = [
     statusLabel: "New · simplified",
     question: "Would Aeros have got the recent past right?",
     does:
-      "Validation and context. A strict hindcast trains Aeros only on data up to 2000 and scores it on 2001 onward against naive baselines, alongside trend statistics with confidence intervals. It never alters Aeros output.",
+      "A hindcast trains Aeros only on data up to 2000 and scores it on 2001 onward against simple baselines.",
     inputs: "An Aeros station and a cut-off year",
     outputs: "Hindcast errors · skill vs baselines · trend tests",
     route: "/app/nexus",
@@ -100,7 +100,7 @@ export const MODELS: ModelCopy[] = [
 export const AUDIENCES = [
   {
     title: "Researchers",
-    text: "Inspect every step — inputs, ensemble weights, hindcast errors — and export the numbers behind each chart.",
+    text: "Inspect every step and export the numbers behind each chart.",
   },
   {
     title: "Educators",
@@ -118,54 +118,55 @@ export const AUDIENCES = [
 
 export const TRUST = [
   {
-    title: "Real Python, running on your device",
+    title: "The research code runs on your device",
     text:
-      "The models are a Python package that runs in your browser through WebAssembly (Pyodide). It is the same code as the research notebook: Aeros reproduces the notebook within 0.0001 °C on identical input, and CORe reproduces it exactly — 620.86 ppm in 2100.",
+      "The models are a Python package that runs in the browser. Aeros reproduces the research notebook within 0.0001 °C on identical input, and CORe reproduces it exactly.",
     source: "Parity tests, models/NOTES.md",
   },
   {
-    title: "Open data with provenance",
+    title: "Open data",
     text:
-      "Station records from NOAA GHCN-M v4 (adjusted) — the station record NASA GISTEMP is built on. CO₂ from NOAA Global Monitoring Laboratory, with RCMIP for earlier years and SSP pathways. Every file can be downloaded.",
+      "Station records come from NOAA GHCN-M v4 (adjusted), and CO₂ from NOAA Global Monitoring Laboratory and RCMIP. Every file can be downloaded.",
     source: "Bundled datasets",
   },
   {
-    title: "Strict hindcast testing",
+    title: "Hindcast testing",
     text:
-      "Nexus retrains Aeros as if it were the year 2000 and scores what it would have projected for 2001–2026 against simple baselines. Where Aeros does no better than a baseline, Nexus says so.",
+      "Nexus retrains Aeros as if it were the year 2000 and scores its projection for 2001–2026 against simple baselines.",
     source: "Nexus 1.0",
   },
   {
-    title: "Uncertainty always shown",
+    title: "Ranges on every result",
     text:
-      "Every projection carries its range and says what kind of range it is — a bootstrap band for one season’s value, a backtest envelope for CO₂, a climate-sensitivity band for scenarios.",
+      "Every projection is shown with its range and a note on what kind of range it is.",
     source: "All models",
   },
 ] as const;
 
 export const NOT_LIST = [
   {
-    title: "Not a weather forecast or a prediction",
+    title: "Not a forecast",
     text: "Projections are conditional model outputs: what the method gives under its stated assumptions.",
   },
   {
-    title: "Not an IPCC scenario assessment",
-    text: "CORe continues historical CO₂ growth; it is not an emissions scenario. Aeros extrapolates a station’s own record and has no emissions input yet.",
+    title: "Not an IPCC scenario",
+    text: "CORe continues historical CO₂ growth. Aeros extrapolates a station’s own record and has no emissions input yet.",
   },
   {
-    title: "Not independently validated yet",
-    text: "The work has not been peer reviewed. Long-range intervals have not been checked for nominal coverage.",
+    title: "Not yet peer reviewed",
+    text: "Long-range intervals have not been checked for nominal coverage.",
   },
   {
-    title: "Not a complex Earth-system model",
-    text: "Catalyst and Nexus are new, simplified v1.0 models — small enough to run on a phone, and labelled as such.",
+    title: "Not an Earth-system model",
+    text: "Catalyst and Nexus are simplified first versions, small enough to run on a phone.",
   },
 ] as const;
 
 /** Honest finding from our own validation layer (models/NOTES.md, Nexus 1.0 on the Washington sample station). */
 export const OWN_LIMITATION = {
+  title: "Mixed hindcast skill so far",
   text:
-    "On the Washington, D.C. sample station, our own Nexus hindcast finds Aeros about as accurate as naive baselines in winter and somewhat better in summer — and its summer ranges too narrow at decade horizons. We publish that because it tells us what to fix next.",
+    "On the Washington, D.C. sample station, Nexus finds Aeros about as accurate as simple baselines in winter and somewhat better in summer, with summer ranges that are too narrow at decade horizons.",
   source: "Nexus 1.0 hindcast, Solaris sample station set",
 };
 

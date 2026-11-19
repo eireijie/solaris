@@ -173,24 +173,11 @@ p {
 }
 
 .sol-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  display: block;
   color: var(--sol-text-3);
-  font-family: var(--sol-font-mono);
-  font-size: var(--sol-text-2xs);
-  font-weight: 600;
-  letter-spacing: var(--sol-tracking-label);
+  font-size: var(--sol-text-sm);
+  font-weight: 500;
   line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.sol-eyebrow::before {
-  width: 24px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.7;
-  content: "";
 }
 
 .sol-display {

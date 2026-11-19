@@ -1,7 +1,7 @@
 /** Shared building blocks for the workbenches. */
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Badge, Button, Callout, IconCheck, IconDownload, ModelBadge, RunProgress, Spinner } from "../../../components/ui";
+import { Button, Callout, IconCheck, IconDownload, Spinner } from "../../../components/ui";
 import { downloadText } from "../../../data";
 import { PYODIDE_PACKAGES, useRuntimeStatus } from "../../../runtime";
 import { MODEL_INFO } from "../modelInfo";
@@ -12,20 +12,28 @@ import { RuntimeStatusPill } from "../RuntimeStatusPill";
 
 /* ---------------- header ---------------- */
 
-export function WorkbenchHeader({ model, compact, title, children }: { model: ModelKey; compact?: boolean; title?: ReactNode; children?: ReactNode }) {
+const HEAD: Record<ModelKey, { title: string; sub: string; origin: string }> = {
+  aeros: { title: "Seasonal temperature projection", sub: "Projects a station’s winter and summer mean temperature to 2100 from its own record.", origin: "From the research notebook" },
+  core: { title: "Global CO₂ projection", sub: "Continues the observed CO₂ record to 2100 and converts it to radiative forcing.", origin: "From the research notebook" },
+  catalyst: { title: "Emissions scenarios", sub: "Change an emissions pathway and compare the outcome with the baseline.", origin: "New, simplified model" },
+  nexus: { title: "Hindcast check", sub: "Trains Aeros on the past only, then scores it against what actually happened.", origin: "New, simplified model" },
+};
+
+export function WorkbenchHeader({ model, compact, children }: { model: ModelKey; compact?: boolean; title?: ReactNode; children?: ReactNode }) {
   const info = MODEL_INFO[model];
+  const head = HEAD[model];
   return (
     <header className="wb-head">
-      <div className="wb-head__badges">
-        <ModelBadge model={model} />
-        {info.status === "new" ? <Badge tone="new">New</Badge> : <Badge tone="neutral">Ported from the team notebook</Badge>}
-        {model === "catalyst" || model === "nexus" ? <Badge tone="info">Simplified model</Badge> : null}
-        <span className="wb-head__pill">
-          <RuntimeStatusPill />
-        </span>
+      <div className="wb-head__text">
+        <p className="wb-head__kicker">
+          {info.name} {info.version} · {head.origin}
+        </p>
+        <h2 className={`wb-head__title ${compact ? "is-compact" : ""}`}>{head.title}</h2>
+        <p className="wb-head__summary">{head.sub}</p>
       </div>
-      <h2 className={`wb-head__title ${compact ? "is-compact" : ""}`}>{title ?? info.tagline}</h2>
-      {!compact ? <p className="wb-head__summary">{info.summary}</p> : null}
+      <span className="wb-head__pill">
+        <RuntimeStatusPill />
+      </span>
       {children}
     </header>
   );
@@ -76,16 +84,9 @@ export function RunStatus({
   }
   if (running && (coldStart || status.state === "loading") && status.state !== "ready") {
     return (
-      <div className="wb-status" data-testid="run-loading">
-        <RunProgress
-          compact
-          title="Loading Python in your browser (first run only)"
-          stages={[...LOAD_STAGES, { label: "Run the model" }]}
-          current={status.state === "loading" || status.state === "idle" ? status.step : 3}
-          elapsedMs={status.elapsedMs}
-          note="Runs locally on this device: nothing is sent to a server. Later runs take well under a second."
-        />
-      </div>
+      <p className="wb-status wb-status--line is-running" role="status" data-testid="run-loading">
+        <Spinner size={16} label="" /> Starting Python in your browser (first run only, about 10 seconds). {LOAD_STAGES[Math.min(status.state === "loading" || status.state === "idle" ? status.step : 2, 2)]?.label ?? ""}…
+      </p>
     );
   }
   if (running) {
@@ -99,33 +100,30 @@ export function RunStatus({
   if (source.kind === "precomputed") {
     return (
       <p className="wb-status wb-status--line" data-testid="source-precomputed" data-source="precomputed">
-        <Badge tone="neutral">Precomputed default result</Badge>
-        <span className="sol-muted">Same model and settings, computed ahead of time. Change any setting to recompute live in your browser.</span>
+        <span className="sol-muted">Saved result for the default settings. Change a setting to run the model in your browser.</span>
       </p>
     );
   }
   if (source.kind === "saved") {
     return (
       <p className="wb-status wb-status--line" data-testid="source-saved" data-source="saved">
-        <Badge tone="info">Saved run</Badge>
-        <span className="sol-muted">{source.label} — shown as saved, not re-run.</span>
+        <span className="sol-muted">Saved run: {source.label}. Shown as saved, not re-run.</span>
       </p>
     );
   }
   return (
     <p className="wb-status wb-status--line" data-testid="source-live" data-source="live" data-ms={Math.round(source.ms)}>
-      <Badge tone="success">
-        <IconCheck size={14} /> Computed live in your browser
-      </Badge>
+      <span className="wb-status__ok">
+        <IconCheck size={14} /> Computed in your browser
+      </span>
       <span className="sol-muted">
-        just now ·{" "}
         {source.coldStart ? (
           <>
-            first run, including Python start-up: <span className="sol-mono">{msLabel(source.wallMs)}</span>
+            {msLabel(source.wallMs)}, including Python start-up
           </>
         ) : (
           <>
-            <span className="sol-mono">{msLabel(source.ms)}</span> in Python
+            {msLabel(source.ms)}
           </>
         )}
       </span>
@@ -151,13 +149,13 @@ export function Disclosure({ summary, children, defaultOpen, testId }: { summary
 export function Warnings({ warnings, title = "Notes from the model" }: { warnings: string[] | undefined; title?: string }) {
   if (!warnings?.length) return null;
   return (
-    <Callout tone="warning" title={`${title} (${warnings.length})`} compact>
+    <Disclosure summary={`${title} (${warnings.length})`}>
       <ul className="wb-list">
         {warnings.map((w, i) => (
           <li key={i}>{w}</li>
         ))}
       </ul>
-    </Callout>
+    </Disclosure>
   );
 }
 
@@ -208,7 +206,7 @@ export function ExportBar({
             downloadText(filename, text);
           }}
         >
-          CSV
+          Download CSV
         </Button>
       ) : null}
       {json ? (
@@ -237,7 +235,7 @@ export function ExportBar({
             }
           }}
         >
-          {copied ? "Copied" : "Copy citation & provenance"}
+          {copied ? "Copied" : "Copy citation"}
         </Button>
       ) : null}
       {onSave ? (

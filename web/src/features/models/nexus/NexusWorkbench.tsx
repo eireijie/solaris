@@ -16,7 +16,8 @@ import type { SavedRun, WorkbenchProps } from "../types";
 import { classLabel, DEFAULT_STATION_ID, STATION_PROVENANCE, stationGroup, useStationsBundle } from "../lib/bundles";
 import { capital, degC, degCSigned, fmt, isNum, pct, perDecade, pValue, range } from "../lib/fmt";
 import { useWorkbenchRun } from "../lib/useWorkbenchRun";
-import { Disclosure, ExportBar, KV, RunStatus, SectionTitle, TEAM_CREDIT, today, Warnings, WorkbenchHeader } from "../components/common";
+import { Disclosure, ExportBar, KV, RunStatus, TEAM_CREDIT, today, Warnings, WorkbenchHeader } from "../components/common";
+import { StationGlobe } from "../components/StationGlobe";
 import { StationPicker } from "../components/StationPicker";
 import "../models.css";
 
@@ -170,11 +171,13 @@ function Verdict({ h, label }: { h: HindcastSeason; label: string }) {
   const worst = Math.min(...skills);
   const cov = h.interval_coverage_95;
   return (
-    <Callout tone={worst < 0.25 ? "warning" : "honesty"} compact title={`${label}: ${skillWord(worst).toLowerCase()} against naive baselines`} >
-      Against the tougher of the two baselines Aeros scores {fmt(worst, 2)} ({"<"} 0 none, 0–0.25 weak, 0.25–0.5 moderate, {">"} 0.5 clear).
-      {isNum(cov) && cov < 0.9 ? ` Its 95% band held only ${pct(cov)} of the held-out seasons, so the band was too narrow here.` : ""}
-      {isNum(cov) && cov >= 0.9 ? ` Its 95% band held ${pct(cov)} of the held-out seasons.` : ""} We show this as measured, including where it is weak.
-    </Callout>
+    <p className="wb-verdict">
+      <strong>
+        {label}: {skillWord(worst).toLowerCase()} against simple baselines.
+      </strong>{" "}
+      Skill score {fmt(worst, 2)} (0 is no better than a baseline, 1 is perfect).
+      {isNum(cov) ? ` The 95% range held ${pct(cov)} of the held-out seasons.` : ""}
+    </p>
   );
 }
 
@@ -252,7 +255,12 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
 }) {
   const uid = useId();
   const restored = initial && (initial.payload as NexusSavedPayload | undefined)?.view === "station" ? (initial.payload as Extract<NexusSavedPayload, { view: "station" }>) : null;
-  const [stationId, setStationId] = useState(restored?.station_id ?? initialStationId ?? DEFAULT_STATION_ID);
+  const [stationId, setStationId0] = useState(restored?.station_id ?? initialStationId ?? DEFAULT_STATION_ID);
+  const [picked, setPicked] = useState(!!restored || !!initialStationId);
+  const setStationId = (id: string) => {
+    setPicked(true);
+    setStationId0(id);
+  };
   const [ui, setUi] = useState<StationUi>(restored?.ui ?? STATION_DEFAULTS);
   const [prefLocal, setPrefLocal] = useState<"winter" | "summer">("winter");
   const [showAdjusted, setShowAdjusted] = useState(false);
@@ -269,7 +277,7 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
   }, [initial]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !picked) return;
     if (handled.current === reqKey) return;
     handled.current = reqKey;
     let cancelled = false;
@@ -301,7 +309,7 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
       if (timer) window.clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reqKey, ready]);
+  }, [reqKey, ready, picked]);
 
   const r = runner.result;
   const seasonKeys = (["D-J-F", "J-J-A"] as SeasonKey[]).filter((k) => r?.hindcast?.seasons[k] || r?.trends?.seasons[k]);
@@ -336,8 +344,9 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
     <div className="wb-layout">
       <aside className="wb-layout__side">
         <div className="wb-controls">
-          {stations.length ? <StationPicker stations={stations} value={stationId} onChange={setStationId} /> : <Skeleton height={64} />}
-          <div className={compact ? "wb-controls__more" : "wb-controls__group"}>
+          {stations.length ? <StationPicker stations={stations} value={picked ? stationId : null} placeholderValue={picked ? undefined : "Choose a station"} onChange={setStationId} /> : <Skeleton height={64} />}
+          {!picked ? <p className="wb-pick">Pick a station on the globe or from the list. The settings appear once a station is chosen.</p> : null}
+          <div className={compact ? "wb-controls__more" : "wb-controls__group"} hidden={!picked}>
             <div className="sol-field">
               <span className="sol-field__label">Train Aeros up to</span>
               <SegmentedControl<string>
@@ -350,6 +359,9 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
               />
               <p className="sol-field__hint">Aeros sees only years up to the cutoff and is scored on every observed season after it.</p>
             </div>
+          </div>
+          {picked ? (
+          <Disclosure summary="Advanced settings">
             <div className="sol-field">
               <span className="sol-field__label">Bootstrap paths</span>
               <SegmentedControl<string>
@@ -357,20 +369,22 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
                 size="sm"
                 block
                 options={[
-                  { value: "100", label: "100 · fast" },
-                  { value: "200", label: "200 · notebook" },
+                  { value: "100", label: "100" },
+                  { value: "200", label: "200" },
                 ]}
                 value={String(ui.paths)}
                 onChange={(v) => setUi((u) => ({ ...u, paths: Number(v) as 100 | 200 }))}
               />
             </div>
-          </div>
+          </Disclosure>
+          ) : null}
         </div>
       </aside>
       <div className="wb-layout__main">
-        <RunStatus running={runner.running} coldStart={runner.coldStart} source={runner.source} error={runner.error} onRetry={runner.retry} />
-        {!r && !runner.error ? <Skeleton height={360} /> : null}
-        {r && sel ? (
+        {stations.length ? <StationGlobe stations={stations} value={picked ? stationId : null} onChange={setStationId} height={compact ? 320 : 380} /> : null}
+        {picked ? <RunStatus running={runner.running} coldStart={runner.coldStart} source={runner.source} error={runner.error} onRetry={runner.retry} /> : null}
+        {picked && !r && !runner.error ? <Skeleton height={360} /> : null}
+        {picked && r && sel ? (
           <div className={`wb-results ${runner.running ? "is-stale" : ""}`} aria-busy={runner.running}>
             <div className="wb-chart-head">
               <p className="wb-result-title">
@@ -390,22 +404,25 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
                 <div data-testid="nexus-chart">
                   <HindcastPanel h={h} station={station} season={sel} label={`${label} · ${selName}`} compact={compact} />
                 </div>
-                <div>
-                  <SectionTitle>Hindcast metrics · {selName}</SectionTitle>
-                  <MetricsTable h={h} />
+                <div className="wb-stats">
+                  <Stat size="sm" value={fmt(h.mae, 2)} unit="°C" label="Mean absolute error" detail={`over ${h.n_test} held-out seasons`} source="" />
+                  <Stat size="sm" value={degCSigned(h.mean_bias, 2)} label="Mean bias" detail={isNum(h.mean_bias) ? (h.mean_bias > 0 ? "Aeros ran too warm" : "Aeros ran too cool") : ""} source="" />
+                  <Stat size="sm" value={pct(h.interval_coverage_95)} label="Seasons inside the 95% range" detail="target is 95%" source="" />
                 </div>
+                <Disclosure summary={`All hindcast metrics · ${selName}`}>
+                  <MetricsTable h={h} />
+                </Disclosure>
                 {t ? (
-                  <div>
-                    <SectionTitle>Observed trends, 1940–1979 vs 1980–latest · {selName}</SectionTitle>
+                  <Disclosure summary={`Observed trends, 1940–1979 vs 1980–latest · ${selName}`}>
                     <TrendTable t={t} />
-                  </div>
+                  </Disclosure>
                 ) : null}
               </>
             ) : (
               <Callout tone="warning">No hindcast available for this season (too few observed years after the cutoff).</Callout>
             )}
             {adj && base ? (
-              <div className="wb-group">
+              <Disclosure summary="Experimental: bias-adjusted view">
                 <Toggle
                   label="Show the Nexus bias-adjusted view next to Aeros"
                   hint="Experimental. The Aeros forecast itself is never changed."
@@ -435,7 +452,7 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
                     <p className="wb-note">{adj.reason ?? "No adjustment available for this season."}</p>
                   )
                 ) : null}
-              </div>
+              </Disclosure>
             ) : null}
             <Disclosure summary={`Data quality · ${selName}`}>
               {dq ? (
@@ -455,9 +472,7 @@ function StationView({ compact, initial, onRunComplete, onSaveRequest, initialSt
               <p className="wb-note">Trend statistics use observed values only; gap-filled years are never scored in the hindcast.</p>
             </Disclosure>
             <Warnings warnings={r.warnings} title="Notes from the run" />
-            <Callout tone="honesty" compact>
-              Nexus 1.0 is a new, simplified validation layer. It never alters Aeros output. A hindcast on one station's past is evidence about the method, not a guarantee for 2100.
-            </Callout>
+            <p className="wb-disclaimer">Nexus never alters Aeros output. A hindcast on one station’s past is evidence about the method, not a guarantee for 2100.</p>
             <ExportBar
               csv={csv}
               json={() => ({ filename: `nexus_${stationId}.json`, data: { payload: saved.current, result: r } })}

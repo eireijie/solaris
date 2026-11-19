@@ -157,7 +157,7 @@ export class EarthRenderer {
     ctx.fillRect(cx - r, cy - r, diameter, diameter);
     if (base) {
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
+      ctx.imageSmoothingQuality = "medium";
       ctx.drawImage(base, ix, iy, img, img);
       if (a && b && a !== b && t > 0.01) {
         ctx.globalAlpha = t;

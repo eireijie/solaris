@@ -68,7 +68,7 @@ function Shell() {
 
   const [welcome, setWelcome] = useState(false);
   useEffect(() => {
-    if (devRoute) return;
+    if (devRoute || pathname !== "/") return;
     if (readStore(KEYS.welcomeDismissed)) return;
     const id = window.setTimeout(() => setWelcome(true), 700);
     return () => window.clearTimeout(id);

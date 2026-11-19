@@ -78,15 +78,15 @@
   --sol-text-lg: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);  /* 17–19 lede */
   --sol-text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);    /* 20–26 */
   --sol-text-2xl: clamp(1.625rem, 1.3rem + 1.4vw, 2.5rem);    /* 26–40 */
-  --sol-text-3xl: clamp(2.125rem, 1.6rem + 2.4vw, 3.75rem);   /* 34–60 section titles */
-  --sol-text-4xl: clamp(2.75rem, 1.8rem + 4.4vw, 5.5rem);     /* 44–88 */
-  --sol-text-hero: clamp(3.25rem, 1.9rem + 6.6vw, 7.75rem);   /* 52–124 hero */
+  --sol-text-3xl: clamp(1.875rem, 1.45rem + 1.7vw, 2.875rem);   /* 34–60 section titles */
+  --sol-text-4xl: clamp(2.25rem, 1.6rem + 2.8vw, 4rem);     /* 44–88 */
+  --sol-text-hero: clamp(3rem, 1.9rem + 5.2vw, 6.25rem);   /* 52–124 hero */
 
   --sol-leading-tight: 0.92;
   --sol-leading-snug: 1.15;
   --sol-leading-body: 1.6;
-  --sol-tracking-display: -0.035em;
-  --sol-tracking-label: 0.14em;
+  --sol-tracking-display: -0.022em;
+  --sol-tracking-label: 0.04em;
 
   --sol-weight-regular: 400;
   --sol-weight-medium: 520;
@@ -109,17 +109,17 @@
   --sol-space-20: 80px;
   --sol-space-24: 96px;
   --sol-space-32: 128px;
-  --sol-section-y: clamp(72px, 10vw, 144px);
+  --sol-section-y: clamp(88px, 12vw, 168px);
   --sol-gutter: clamp(16px, 4vw, 40px);
-  --sol-container: 1240px;
+  --sol-container: 1120px;
   --sol-container-narrow: 760px;
   --sol-header-h: 64px;
 
   /* ---------- Radii ---------- */
   --sol-radius-xs: 4px;
   --sol-radius-sm: 6px;
-  --sol-radius-md: 10px;
-  --sol-radius-lg: 16px;
+  --sol-radius-md: 8px;
+  --sol-radius-lg: 10px;
   --sol-radius-pill: 999px;
 
   /* ---------- Controls ---------- */
@@ -130,7 +130,7 @@
   --sol-shadow-1: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
   --sol-shadow-2: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px rgba(0, 0, 0, 0.45);
   --sol-shadow-3: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 64px rgba(0, 0, 0, 0.6);
-  --sol-shadow-gold: 0 10px 30px rgba(255, 184, 77, 0.16);
+  --sol-shadow-gold: none;
 
   /* ---------- Motion ---------- */
   --sol-ease-out: cubic-bezier(0.22, 1, 0.36, 1);

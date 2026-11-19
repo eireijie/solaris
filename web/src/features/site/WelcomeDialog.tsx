@@ -1,24 +1,20 @@
 import { Button, Modal } from "../../components/ui";
-import { IconShield, IconSliders, IconThermo } from "./icons";
 import { TeamGrid } from "./TeamCards";
 import { PRESENTED_AT } from "./team";
 import "./site.css";
 
 const STEPS = [
   {
-    icon: <IconThermo size={20} />,
     title: "Pick a station, run Aeros",
-    text: "Choose one of 45 bundled stations or upload your own CSV. Aeros projects its winters and summers to 2100, with a 95% range.",
+    text: "Choose one of 45 stations or upload a CSV. Aeros projects its winters and summers to 2100.",
   },
   {
-    icon: <IconShield size={20} />,
     title: "Check it against the past",
-    text: "Nexus re-runs Aeros as if it were the year 2000 and scores what it would have said about 2001–2026.",
+    text: "Nexus re-runs Aeros as if it were 2000 and scores it on 2001–2026.",
   },
   {
-    icon: <IconSliders size={20} />,
     title: "Test what changes it",
-    text: "Follow global CO₂ with CORe, then edit emissions pathways in Catalyst and compare the outcomes.",
+    text: "Follow global CO₂ with CORe, then edit emissions pathways in Catalyst.",
   },
 ];
 
@@ -42,10 +38,10 @@ export function WelcomeDialog({
       size="lg"
       title={
         <>
-          Welcome to <span className="site-welcome__brand">Solaris</span>
+          Welcome to Solaris
         </>
       }
-      description="A climate research platform built by two students and their mentor: real station records, transparent projections to 2100, and models you can run right here."
+      description="A climate research platform built by two students and their mentor. The models run in your browser."
       footer={
         <div className="site-welcome__actions">
           <button type="button" className="site-welcome__guide" onClick={onGuide}>
@@ -54,11 +50,11 @@ export function WelcomeDialog({
           <div className="site-welcome__buttons">
             {accountsAvailable ? (
               <Button variant="secondary" onClick={onCreateAccount}>
-                Create a free account to save your work
+                Create an account
               </Button>
             ) : null}
             <Button onClick={onClose} data-testid="welcome-explore">
-              Explore without an account
+              Continue without an account
             </Button>
           </div>
         </div>
@@ -80,8 +76,7 @@ export function WelcomeDialog({
             {STEPS.map((s, i) => (
               <li key={s.title} className="site-welcome__step">
                 <span className="site-welcome__num" aria-hidden="true">
-                  {s.icon}
-                  <span>{i + 1}</span>
+                  {i + 1}
                 </span>
                 <div>
                   <p className="site-welcome__step-title">{s.title}</p>
@@ -91,10 +86,7 @@ export function WelcomeDialog({
             ))}
           </ol>
         </section>
-        <p className="site-welcome__privacy">
-          Models run on your device. Data you upload stays in this browser unless you save a run to your account. Results
-          are conditional model outputs, not predictions.
-        </p>
+        <p className="site-welcome__privacy">Data you upload stays in this browser unless you save a run to your account.</p>
       </div>
     </Modal>
   );

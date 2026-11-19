@@ -203,3 +203,65 @@
   vertical-align: middle;
   overflow: visible;
 }
+
+/* ---------------- light chart surface ----------------
+ * Charts render on a white card, like a figure in a paper. The tokens are
+ * re-declared inside the chart so every series colour keeps enough contrast. */
+.sol-chart {
+  padding: 20px;
+  border: 1px solid #d9dee5;
+  border-radius: var(--sol-radius-md);
+  background: #ffffff;
+  color: #111827;
+  color-scheme: light;
+  --sol-bg: #ffffff;
+  --sol-surface-1: #ffffff;
+  --sol-surface-2: #f3f4f6;
+  --sol-surface-3: #e5e7eb;
+  --sol-text: #111827;
+  --sol-text-2: #374151;
+  --sol-text-3: #6b7280;
+  --sol-line-subtle: #e5e7eb;
+  --sol-line: #d9dee5;
+  --sol-line-strong: #9ca3af;
+  --sol-solar: #c2570c;
+  --sol-solar-hi: #9a4409;
+  --sol-focus: #1d4ed8;
+  --sol-model-aeros: #c2570c;
+  --sol-model-core: #1d5fa8;
+  --sol-model-catalyst: #b4321f;
+  --sol-model-nexus: #0f766e;
+  --sol-data-observed: #4b5563;
+  --sol-data-trend: #1d5fa8;
+  --sol-data-projection: #c2570c;
+  --sol-data-band: rgba(194, 87, 12, 0.16);
+  --sol-data-1: #c2570c;
+  --sol-data-2: #1d5fa8;
+  --sol-data-3: #0f766e;
+  --sol-data-4: #b4321f;
+  --sol-data-5: #8e3a80;
+  --sol-data-6: #8a6d00;
+  --sol-data-grid: rgba(17, 24, 39, 0.08);
+  --sol-data-axis: rgba(17, 24, 39, 0.4);
+  --sol-data-marker: rgba(17, 24, 39, 0.45);
+}
+
+.sol-chart .sol-chart__legend-item:hover {
+  background: #f3f4f6;
+}
+
+.sol-chart .sol-chart__projection rect,
+.sol-chart .sol-chart__projection {
+  fill: rgba(17, 24, 39, 0.03);
+}
+
+.sol-chart .sol-chart__crosshair line {
+  stroke: rgba(17, 24, 39, 0.4);
+}
+
+.sol-chart .sol-chart__tooltip {
+  border-color: #d9dee5;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.12);
+  color: #111827;
+}

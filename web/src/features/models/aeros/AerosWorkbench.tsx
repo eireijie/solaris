@@ -15,7 +15,8 @@ import { DEFAULT_STATION_ID, STATION_PROVENANCE, useStationsBundle } from "../li
 import { degC, degCSigned, fmt, isNum, perDecade, range } from "../lib/fmt";
 import { useOpenInAeros } from "../lib/selection";
 import { useWorkbenchRun } from "../lib/useWorkbenchRun";
-import { Disclosure, ExportBar, KV, RunStatus, SectionTitle, TEAM_CREDIT, today, Warnings, WeightBar, WorkbenchHeader } from "../components/common";
+import { Disclosure, ExportBar, KV, RunStatus, TEAM_CREDIT, today, Warnings, WeightBar, WorkbenchHeader } from "../components/common";
+import { StationGlobe } from "../components/StationGlobe";
 import { StationPicker } from "../components/StationPicker";
 import { CsvUpload } from "./CsvUpload";
 import { AEROS_DEFAULTS, aerosCsv, apiOptions, isDefaultUi, orderedSeasons, seasonTitle, uploadSeasons } from "./aerosShared";
@@ -79,6 +80,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
   const [ui, setUi] = useState<AerosUi>(restored.ui);
   const [seedDraft, setSeedDraft] = useState(String(restored.ui.seed));
   const [endDraft, setEndDraft] = useState(restored.ui.endYear);
+  const [picked, setPicked] = useState(!!restored.src || !!initialStationId);
   const [inputMode, setInputMode] = useState<"station" | "upload">(restored.src?.kind === "upload" ? "upload" : "station");
   const [prefLocal, setPrefLocal] = useState<"winter" | "summer">("winter");
   const runner = useWorkbenchRun<AerosResult>("aeros", `aeros-${uid}`);
@@ -99,12 +101,14 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
     }
     if (initialStationId) {
       setInputMode("station");
+      setPicked(true);
       setSrc({ kind: "station", id: initialStationId });
     }
   }, [initialStationId]);
   useOpenInAeros(
     useCallback((id: string) => {
       setInputMode("station");
+      setPicked(true);
       setSrc({ kind: "station", id });
       rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, []),
@@ -147,7 +151,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
   const handled = useRef<string | null>(initialRun?.result ? reqKey : null);
 
   useEffect(() => {
-    if (!bundleReady) return;
+    if (!bundleReady || !picked) return;
     if (handled.current === reqKey) return;
     handled.current = reqKey;
     let cancelled = false;
@@ -178,7 +182,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
       if (timer) window.clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reqKey, bundleReady]);
+  }, [reqKey, bundleReady, picked]);
 
   const result0 = runner.result;
   const result = useMemo(() => (result0 && src.kind === "upload" && result0.seed_label === src.upload.name ? relabel(result0, src.upload.hemisphere) : result0), [result0, src]);
@@ -230,7 +234,12 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
     return s;
   }, [sel]);
 
-  const loadingFirst = !result && !runner.error;
+  const loadingFirst = picked && !result && !runner.error;
+  const pickStation = (id: string) => {
+    lastStation.current = id;
+    setPicked(true);
+    setSrc({ kind: "station", id });
+  };
   const dominant = sel ? [...sel.ensemble.members].sort((a, b) => b.weight - a.weight)[0] : undefined;
 
   const controls = (
@@ -240,7 +249,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
         block
         options={[
           { value: "station", label: "Sample stations" },
-          { value: "upload", label: "Use your own data" },
+          { value: "upload", label: "Upload a CSV" },
         ]}
         value={inputMode}
         onChange={(v) => {
@@ -256,12 +265,9 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
         ) : stations.length ? (
           <StationPicker
             stations={stations}
-            value={src.kind === "station" ? src.id : null}
-            placeholderValue={src.kind === "upload" ? `Your data: ${src.upload.fileName}` : undefined}
-            onChange={(id) => {
-              lastStation.current = id;
-              setSrc({ kind: "station", id });
-            }}
+            value={picked && src.kind === "station" ? src.id : null}
+            placeholderValue={src.kind === "upload" ? `Your data: ${src.upload.fileName}` : !picked ? "Choose a station" : undefined}
+            onChange={pickStation}
           />
         ) : (
           <Skeleton height={64} />
@@ -269,12 +275,27 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
       ) : (
         <CsvUpload
           current={src.kind === "upload" ? src.upload : null}
-          onUpload={(u) => setSrc({ kind: "upload", upload: u })}
+          onUpload={(u) => {
+            setPicked(true);
+            setSrc({ kind: "upload", upload: u });
+          }}
           onHemisphere={(h) => setSrc((s) => (s.kind === "upload" ? { kind: "upload", upload: { ...s.upload, hemisphere: h } } : s))}
         />
       )}
-      <div className={compact ? "wb-controls__more" : "wb-controls__group"}>
-        {compact ? null : <p className="wb-controls__heading">Settings</p>}
+      {picked ? (
+        <>
+      <Slider
+        label="Project to"
+        min={2040}
+        max={2100}
+        step={5}
+        value={endDraft}
+        format={(v) => String(v)}
+        onChange={setEndDraft}
+        onCommit={(v) => setUiKey("endYear", v)}
+      />
+      <Disclosure summary="Advanced settings">
+        <div className="wb-controls__group">
         <div className="sol-field">
           <span className="sol-field__label" id={`${uid}-paths`}>
             Bootstrap paths
@@ -284,25 +305,15 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
             block
             size="sm"
             options={[
-              { value: "100", label: "100 · fast", hint: "Fast mode for phones (100 paths)" },
-              { value: "200", label: "200 · notebook", hint: "The team notebook's recorded setting" },
-              { value: "1000", label: "1000 · stable", hint: "Smaller Monte-Carlo noise; ~5× slower" },
+              { value: "100", label: "100", hint: "Fast mode for phones (100 paths)" },
+              { value: "200", label: "200", hint: "The team notebook's recorded setting" },
+              { value: "1000", label: "1000", hint: "Smaller Monte-Carlo noise; ~5× slower" },
             ]}
             value={String(ui.paths)}
             onChange={(v) => setUiKey("paths", Number(v) as PathsChoice)}
           />
-          <p className="sol-field__hint">200 reproduces the notebook. With 200 paths re-seeding moves the 2100 mean by about ±0.15 °C; 1000 is steadier.</p>
+          <p className="sol-field__hint">200 matches the notebook. 1000 is steadier but slower.</p>
         </div>
-        <Slider
-          label="Project to"
-          min={2040}
-          max={2100}
-          step={5}
-          value={endDraft}
-          format={(v) => String(v)}
-          onChange={setEndDraft}
-          onCommit={(v) => setUiKey("endYear", v)}
-        />
         <div className="sol-field">
           <label className="sol-field__label" htmlFor={`${uid}-seed`}>
             Random seed
@@ -330,7 +341,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
               New seed
             </Button>
           </div>
-          <p className="sol-field__hint">42 = notebook. The draw also depends on the station id (seed label).</p>
+          <p className="sol-field__hint">42 matches the notebook.</p>
         </div>
         {!isDefaultUi(ui) ? (
           <Button
@@ -345,7 +356,12 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
             Reset to notebook defaults
           </Button>
         ) : null}
-      </div>
+        </div>
+      </Disclosure>
+        </>
+      ) : (
+        <p className="wb-pick">Pick a station on the globe or from the list. The settings appear once a station is chosen.</p>
+      )}
     </div>
   );
 
@@ -365,7 +381,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
             value={fmt(s.summary_end.mean, 1)}
             unit="°C"
             label={`${seasonTitle(s)} mean, ${s.summary_end.year}`}
-            detail={`95% range of a single season ${range(s.summary_end.lower, s.summary_end.upper, 1, "°C")}${isNum(s.summary_end.mc_standard_error_of_mean) ? ` · Monte-Carlo SE ±${fmt(s.summary_end.mc_standard_error_of_mean, 2)} °C` : ""}`}
+            detail={`95% range ${range(s.summary_end.lower, s.summary_end.upper, 1, "°C")}`}
             source={`Aeros ${result.version} · ${nPaths ?? "?"} paths, seed ${String(result.inputs.seed)}`}
           />
         </button>
@@ -512,14 +528,15 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
       <div className="wb-layout">
         <aside className="wb-layout__side">{controls}</aside>
         <div className="wb-layout__main">
-          <RunStatus running={runner.running} coldStart={runner.coldStart} source={runner.source} error={runner.error} onRetry={runner.retry} />
+          {inputMode === "station" && stations.length ? <StationGlobe stations={stations} value={picked && src.kind === "station" ? src.id : null} onChange={pickStation} height={compact ? 320 : 380} /> : null}
+          {picked ? <RunStatus running={runner.running} coldStart={runner.coldStart} source={runner.source} error={runner.error} onRetry={runner.retry} /> : null}
           {loadingFirst ? (
             <div className="wb-skel" aria-busy="true">
               <Skeleton height={88} />
               <Skeleton height={320} />
             </div>
           ) : null}
-          {result && sel ? (
+          {picked && result && sel ? (
             <div className={`wb-results ${runner.running ? "is-stale" : ""}`} aria-busy={runner.running}>
               <p className="wb-result-title">
                 <strong>{resultLabel}</strong>
@@ -555,32 +572,11 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
                 />
               </div>
               <Warnings warnings={result.warnings} title="Data notes" />
-              {compact ? (
-                <>
-                  <Disclosure summary="Trend slopes (°C/decade)">{slopes}</Disclosure>
-                  <Disclosure summary={`Ensemble weights · ${seasonTitle(sel)}`}>{ensemble}</Disclosure>
-                  <Disclosure summary={`Data quality · ${seasonTitle(sel)}`}>{quality}</Disclosure>
-                </>
-              ) : (
-                <div className="wb-grid2">
-                  <div>
-                    <SectionTitle>Trend slopes</SectionTitle>
-                    {slopes}
-                  </div>
-                  <div>
-                    <SectionTitle>Data quality · {seasonTitle(sel)}</SectionTitle>
-                    {quality}
-                  </div>
-                  <div className="wb-span2">
-                    <SectionTitle>Ensemble members · {seasonTitle(sel)}</SectionTitle>
-                    {ensemble}
-                  </div>
-                </div>
-              )}
+              <Disclosure summary="Trend slopes">{slopes}</Disclosure>
+              <Disclosure summary={`Ensemble members · ${seasonTitle(sel)}`}>{ensemble}</Disclosure>
+              <Disclosure summary={`Data quality · ${seasonTitle(sel)}`}>{quality}</Disclosure>
               {howTo}
-              <Callout tone="honesty" compact>
-                {result.disclaimer}
-              </Callout>
+              <p className="wb-disclaimer">{result.disclaimer}</p>
               <ExportBar
                 csv={() => ({ filename: `aeros_${(result.station?.id ?? "station").replace(/[^\w-]+/g, "_")}_${result.end_year}.csv`, text: aerosCsv(result, resultLabel) })}
                 json={() => ({ filename: `aeros_${(result.station?.id ?? "station").replace(/[^\w-]+/g, "_")}.json`, data: { payload: savedPayload.current, result } })}
@@ -596,7 +592,7 @@ export function AerosWorkbench({ compact, initialRun, onRunComplete, onSaveReque
               />
             </div>
           ) : null}
-          {result && !sel ? <Callout tone="warning" title="No season had enough data">Aeros needs at least 10 years in a season. Skipped: {result.skipped_seasons.join(", ")}</Callout> : null}
+          {picked && result && !sel ? <Callout tone="warning" title="No season had enough data">Aeros needs at least 10 years in a season. Skipped: {result.skipped_seasons.join(", ")}</Callout> : null}
         </div>
       </div>
     </section>

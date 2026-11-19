@@ -191,7 +191,6 @@
 
 .demo-findings {
   background:
-    radial-gradient(60% 50% at 80% 0%, rgba(242, 183, 94, 0.06), transparent 70%),
     linear-gradient(180deg, var(--sol-bg), var(--sol-surface-1));
 }
 
@@ -231,7 +230,6 @@
   left: 50%;
   width: min(720px, 80vw);
   height: 220px;
-  background: radial-gradient(50% 100% at 50% 0%, color-mix(in srgb, var(--c) 10%, transparent), transparent);
   content: "";
   pointer-events: none;
   transform: translateX(-50%);
@@ -286,7 +284,6 @@
 .demo-qr {
   overflow: hidden;
   background:
-    radial-gradient(50% 70% at 75% 50%, rgba(255, 184, 77, 0.12), transparent 70%),
     var(--sol-space);
 }
 

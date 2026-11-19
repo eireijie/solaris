@@ -5,12 +5,11 @@
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { JSX } from "react";
-import { Badge, Button, Callout, SegmentedControl, Select, Skeleton, Slider, Stat, Toggle } from "../../../components/ui";
+import { Button, SegmentedControl, Select, Skeleton, Slider, Stat, Toggle } from "../../../components/ui";
 import { TimeSeriesChart } from "../../../components/charts";
 import type { TSSeries } from "../../../components/charts";
 import { seriesToCsv } from "../../../data";
 import { fetchPrecomputed, getRuntime, useRuntimeStatus } from "../../../runtime";
-import { useMediaQuery } from "../../../lib/hooks";
 import type { CatalystPath, CatalystResult, CatalystValidation, CoreResult, Num } from "../results";
 import type { WorkbenchProps } from "../types";
 import { catalystData, SSP_LABELS, useCo2Bundle, usePrecomputed } from "../lib/bundles";
@@ -143,7 +142,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
   const [ui, setUi] = useState<CatUi>(restored ?? DEFAULT_UI);
   const [q, setQ] = useState<Q>("temp");
   const [near, setNear] = useState(false);
-  const wide = useMediaQuery("(min-width: 1100px)") && !compact;
+  const wide: boolean = false;
   const runner = useWorkbenchRun<CatalystResult>("catalyst", `catalyst-${uid}`);
   const savedRef = useRef<CatSavedPayload | null>(initialRun ? (initialRun.payload as CatSavedPayload) : null);
   const rootRef = useNearView<HTMLElement>(() => {
@@ -224,7 +223,6 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
   const showingPlaceholder = !!r && runner.source?.kind === "precomputed" && !precomputedKey(ui);
 
   const endKey = r ? String(r.years.at(-1)) : "2100";
-  const d2050 = r?.delta["2050"];
   const dEnd = r?.delta[endKey];
   const cum = r?.cumulative_emissions_gtco2;
 
@@ -244,7 +242,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
       includeZero={k === "emissions"}
       references={k === "emissions" ? [{ y: 0, label: "net zero" }] : undefined}
       series={data}
-      height={wide ? 280 : compact ? 250 : undefined}
+      height={compact ? 250 : undefined}
       animationMs={350}
       footer={
         k === "temp"
@@ -287,26 +285,11 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
         hint="Linear ramp from the peak (or 2025) level to zero."
       />
       <Slider label="Cut below 2019 level" min={0} max={80} step={1} value={ui.iv.cutPct} format={(v) => (v === 0 ? "None" : `${v}%`)} onChange={(v) => setIv({ cutPct: v })} />
-      <Slider label="…reached by" min={2030} max={2050} step={1} value={ui.iv.cutYear} disabled={ui.iv.cutPct === 0} onChange={(v) => setIv({ cutYear: v })} />
+      {ui.iv.cutPct > 0 ? <Slider label="…reached by" min={2030} max={2050} step={1} value={ui.iv.cutYear} disabled={ui.iv.cutPct === 0} onChange={(v) => setIv({ cutYear: v })} /> : null}
       <Slider label="Carbon removal" min={0} max={20} step={0.5} value={ui.iv.removal} format={(v) => (v === 0 ? "None" : `${v.toFixed(1)} GtCO₂/yr`)} onChange={(v) => setIv({ removal: v })} />
-      <Slider label="…starting in" min={2030} max={2080} step={1} value={ui.iv.removalStart} disabled={ui.iv.removal === 0} onChange={(v) => setIv({ removalStart: v })} hint="10-year ramp; assumed permanent storage." />
+      {ui.iv.removal > 0 ? <Slider label="…starting in" min={2030} max={2080} step={1} value={ui.iv.removalStart} disabled={ui.iv.removal === 0} onChange={(v) => setIv({ removalStart: v })} hint="10-year ramp; assumed permanent storage." /> : null}
     </>
   );
-
-  const liveReadout = r ? (
-    <p className="wb-readout" aria-live="polite" data-testid="catalyst-readout">
-      {runner.running ? <span className="wb-readout__dot" aria-hidden="true" /> : null}
-      <span>
-        ΔT {endKey}: <strong className="sol-mono">{isNum(dEnd?.temperature_c) ? `${dEnd!.temperature_c! > 0 ? "+" : dEnd!.temperature_c! < 0 ? "−" : "±"}${fmt(Math.abs(dEnd!.temperature_c!), 2)} °C` : "—"}</strong>
-      </span>
-      <span>
-        peak <strong className="sol-mono">{degC(r.scenario.peak_warming?.value_c, 2)}</strong>
-      </span>
-      <span>
-        CO₂ {endKey}: <strong className="sol-mono">{ppm(dEnd?.scenario.ppm, 0)}</strong>
-      </span>
-    </p>
-  ) : null;
 
   const controlsTop = (
     <div className="wb-controls" aria-label="Catalyst scenario">
@@ -322,7 +305,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
       />
       {ui.mode === "emissions" ? (
         <div className="sol-field">
-          <span className="sol-field__label">Presets</span>
+          <span className="sol-field__label">Start from a scenario</span>
           <div className="wb-presets" role="group" aria-label="Scenario presets">
             {PRESETS.map((p) => (
               <button key={p.id} type="button" className={`wb-preset ${activePreset?.id === p.id ? "is-active" : ""}`} aria-pressed={activePreset?.id === p.id} onClick={() => setUi((u) => ({ ...u, iv: p.iv }))}>
@@ -354,7 +337,6 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
 
   const controlsTune = (
     <div className="wb-controls" aria-label="Catalyst fine-tuning">
-      {liveReadout}
       {ui.mode === "emissions" ? (
         <>
           <Select
@@ -364,15 +346,13 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
             options={[{ value: "core", label: "CORe continuation (diagnosed emissions)" }, ...ALL_SSPS.map((s) => ({ value: s, label: `${SSP_LABELS[s]} (RCMIP emissions)` }))]}
           />
           <div className="wb-group" data-testid="catalyst-interventions">
-            <p className="wb-group__title">
-              Interventions {activePreset ? <Badge tone="neutral">{activePreset.name}</Badge> : <Badge tone="solar">Custom</Badge>}
-            </p>
+            <p className="wb-group__title">Adjust the scenario</p>
             {compact ? <div className="wb-controls__more">{sliders}</div> : sliders}
           </div>
         </>
       ) : null}
-      <div className="wb-group">
-        <p className="wb-group__title">Physics</p>
+      <Disclosure summary="Climate settings">
+        <div className="wb-controls__group">
         <Slider label="Climate sensitivity (ECS)" min={1.5} max={6} step={0.1} value={ui.ecs} format={(v) => `${v.toFixed(1)} °C`} onChange={(v) => set({ ecs: v })} marks={ecsMarks} hint="Marks: IPCC AR6 likely range 2.5–4.0 °C." />
         <div className="sol-field">
           <span className="sol-field__label">Temperature model</span>
@@ -390,7 +370,8 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
         </div>
         <Toggle label="Include scenario non-CO₂ forcing" hint="Methane, aerosols etc. from the RCMIP SSP (SSP2-4.5 for CORe baselines)." checked={ui.nonCo2} onChange={(v) => set({ nonCo2: v })} />
         <Slider label="Run to" min={2050} max={2100} step={5} value={ui.endYear} onChange={(v) => set({ endYear: v })} />
-      </div>
+        </div>
+      </Disclosure>
       <Button size="sm" variant="ghost" onClick={() => setUi(DEFAULT_UI)}>
         Reset all
       </Button>
@@ -406,8 +387,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
         <div className="wb-layout__main">
           {showingPlaceholder && status.state !== "ready" && !runner.error ? (
             <p className="wb-loading-banner" role="status" data-testid="catalyst-placeholder">
-              <Badge tone="solar">Loading the model…</Badge>
-              Meanwhile: the precomputed comparison of the CORe pathway with {r?.scenario.label ?? "an SSP pathway"}. Your scenario computes in this browser as soon as Python is ready.
+              Loading the model. Meanwhile, this is the saved comparison of the CORe pathway with {r?.scenario.label ?? "an SSP pathway"}. Your scenario computes in this browser as soon as Python is ready.
             </p>
           ) : null}
           <RunStatus running={runner.running} coldStart={runner.coldStart} source={runner.source} error={runner.error} onRetry={runner.retry} />
@@ -415,19 +395,9 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
           {r ? (
             <div className={`wb-results ${runner.running ? "is-stale" : ""}`} aria-busy={runner.running} data-testid="catalyst-results">
               <div className="wb-big" data-testid="catalyst-deltas">
-                {d2050 ? (
-                  <Stat
-                    size="sm"
-                    value={<Delta v={d2050.temperature_c} unit="°C" testId="delta-2050" />}
-                    label="Warming difference in 2050"
-                    detail={`scenario ${degC(d2050.scenario.temperature_c, 2)} vs baseline ${degC(d2050.baseline.temperature_c, 2)}`}
-                    source="Catalyst 1.0 · scenario − baseline"
-                  />
-                ) : null}
                 {dEnd ? (
                   <Stat
                     size="sm"
-                    tone="solar"
                     value={<Delta v={dEnd.temperature_c} unit="°C" testId="delta-end" />}
                     label={`Warming difference in ${endKey}`}
                     detail={`scenario ${degC(dEnd.scenario.temperature_c, 2)} vs baseline ${degC(dEnd.baseline.temperature_c, 2)}`}
@@ -448,7 +418,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
                   value={isNum(r.scenario.peak_warming?.value_c) ? fmt(r.scenario.peak_warming!.value_c, 2) : "—"}
                   unit="°C"
                   label={`Scenario peak warming${r.scenario.peak_warming?.year ? `, in ${r.scenario.peak_warming.year}` : ""}`}
-                  detail={`baseline peak ${degC(r.baseline.peak_warming?.value_c, 2)}${r.baseline.peak_warming?.year ? ` in ${r.baseline.peak_warming.year}` : ""} · within ${r.years[0]}–${r.years.at(-1)}`}
+                  detail={`baseline peak ${degC(r.baseline.peak_warming?.value_c, 2)}`}
                   source="Catalyst 1.0"
                 />
                 {cum && isNum(cum.difference) ? (
@@ -457,7 +427,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
                     value={fmt(Math.abs(cum.difference), 0)}
                     unit="GtCO₂"
                     label={`Cumulative emissions ${cum.difference <= 0 ? "avoided" : "added"}, ${cum.period[0]}–${cum.period[1]}`}
-                    detail={`${cum.kind === "implied" ? "implied by the pathways" : "scenario vs baseline"}: ${fmt(cum.scenario, 0)} vs ${fmt(cum.baseline, 0)} GtCO₂`}
+                    detail={`${fmt(cum.scenario, 0)} vs ${fmt(cum.baseline, 0)} GtCO₂`}
                     source="Catalyst 1.0"
                   />
                 ) : null}
@@ -488,7 +458,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
                 </div>
               )}
               <Warnings warnings={r.warnings} />
-              <Disclosure summary={`What this run assumed (${r.assumptions.length} statements from the model)`} testId="catalyst-assumptions">
+              <Disclosure summary="What this run assumed" testId="catalyst-assumptions">
                 <ul className="wb-list">
                   {r.assumptions.map((a, i) => (
                     <li key={i}>{a}</li>
@@ -553,9 +523,7 @@ export function CatalystWorkbench({ compact, initialRun, onRunComplete, onSaveRe
                   <Skeleton height={120} />
                 )}
               </Disclosure>
-              <Callout tone="honesty" compact>
-                {String(r.provenance.conditional ?? "Conditional what-if output from a simplified model, not a prediction or policy assessment.")}
-              </Callout>
+              <p className="wb-disclaimer">{String(r.provenance.conditional ?? "Conditional what-if output from a simplified model, not a prediction or policy assessment.")}</p>
               <ExportBar
                 csv={() => {
                   const cols: Record<string, (number | string | null)[]> = { year: r.years };
